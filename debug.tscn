@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://bt5sl226wfj88"]
+
+[ext_resource type="PackedScene" uid="uid://ggaf7pios5fi" path="res://models/cube.blend" id="1_1uwqr"]
+[ext_resource type="Script" uid="uid://okx3fsiwhki2" path="res://src/CubeController.cs" id="2_lvjdj"]
+
+[node name="Debug" type="Node3D"]
+
+[node name="cube" parent="." node_paths=PackedStringArray("_camera") instance=ExtResource("1_1uwqr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00956678, 1, 0)
+script = ExtResource("2_lvjdj")
+_camera = NodePath("../Camera3D")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.854459, 0.519519, 0, -0.519519, 0.854459, 0, 5.172, 6.19149)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.502166, -0.812775, -0.295339, 0.123945, -0.270351, 0.95475, -0.855843, -0.516049, -0.0350217, 0, 8.59069, 0)
