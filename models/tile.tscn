@@ -1,0 +1,53 @@
+[gd_scene load_steps=6 format=3 uid="uid://cppa217x7ogvj"]
+
+[ext_resource type="PackedScene" uid="uid://duuuga43rwiy7" path="res://models/tile.blend" id="1_pdv48"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pdv48"]
+radius = 0.25
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_4wrp0"]
+radius = 0.25
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_6vy64"]
+radius = 0.25
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_gwead"]
+radius = 0.25
+
+[node name="tile" groups=["grid-cell"] instance=ExtResource("1_pdv48")]
+metadata/EDGE_LEFT = 0.0
+metadata/EDGE_RIGHT = 0.0
+metadata/EDGE_FORWARD = 0.0
+metadata/EDGE_BACK = 0.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" groups=["grid-cell__exit"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+collision_mask = 4096
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+shape = SubResource("SphereShape3D_pdv48")
+debug_color = Color(0.96862745, 0, 0.47843137, 1)
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="." index="2" groups=["grid-cell__exit"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
+collision_mask = 4096
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2" index="0"]
+shape = SubResource("SphereShape3D_4wrp0")
+debug_color = Color(0.96862745, 0, 0.47843137, 1)
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="." index="3" groups=["grid-cell__exit"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+collision_mask = 4096
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3" index="0"]
+shape = SubResource("SphereShape3D_6vy64")
+debug_color = Color(0.96862745, 0, 0.47843137, 1)
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="." index="4" groups=["grid-cell__exit"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+collision_mask = 4096
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D4" index="0"]
+shape = SubResource("SphereShape3D_gwead")
+debug_color = Color(0.96862745, 0, 0.47843137, 1)
