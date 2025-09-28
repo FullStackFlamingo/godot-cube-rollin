@@ -1,15 +1,15 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Play",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "program": "/home/ajax/godot/godot",
-            "args": [],
-            "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Play",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "/home/ajax/godot/godot",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false
+    }
+  ]
 }

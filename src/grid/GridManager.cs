@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -6,9 +7,9 @@ namespace CubeWorld
     public partial class GridManager : Node3D
     {
         [Export]
+        private MeshInstance3D TestInstance;
         private int TileWidth = 2;
 
-        private int maxGridSize = 20;
         private System.Collections.Generic.Dictionary<Vector3I, GridCell> cellIndices = new();
 
         private AStar3DCustom aStar3D = new();
@@ -35,21 +36,42 @@ namespace CubeWorld
             {
                 foreach (GridCell neighbor in FindNeighbors(cellPos, cellIndices))
                 {
-                    // System.Console.WriteLine("connect" + cellIndices[cellPos].AStarPointId + "with" + neighbor.AStarPointId);
-
                     aStar3D.ConnectPoints(cellIndices[cellPos].AStarPointId, neighbor.AStarPointId);
                 }
             }
 
-            // System.Console.WriteLine("point0 connections" + aStar3D.GetPointConnections(0).Join());
-            // System.Console.WriteLine(aStar3D.GetPointPath(cellIndices[new(0, 0, 0)].AStarPointId, cellIndices[new(10, 0, 12)].AStarPointId).Join());
+            Vector3[] points = aStar3D.GetPointPath(cellIndices[new(0, 0, 0)].AStarPointId, cellIndices[new(10, 0, 12)].AStarPointId);
 
+            Tween tween = CreateTween();
+            for (int i = 0; i < points.Count(); i++)
+            {
+                Vector3 point = points[i];
+                Vector3 PrevPoint = Vector3.Zero;
+                if (i != 0)
+                {
+                    PrevPoint = points[i - 1];
+                }
+
+                tween.TweenProperty(TestInstance, "position", point + Vector3.Up, 1);
+                tween.Parallel().TweenMethod(
+                    Callable.From((Vector3 target) =>
+                    {
+                        TestInstance.RotateY(Mathf.Atan2(target.X, target.Z));
+                    }), PrevPoint, point, 0.2f);
+
+                // tween.Parallel().TweenMethod(
+                //     Callable.From((Vector3 target) =>
+                //     {
+                //         TestInstance.LookAt(target, Vector3.Up);
+                //     })
+                //     , new Vector3(PrevPoint.X, TestInstance.Position.Y, PrevPoint.Z), new Vector3(point.X, TestInstance.Position.Y, point.Z), 0.2f);
+                // tween.TweenMethod(Callable.From((float progress) => LerpTransform(progress, startTransform, rotationCenter, rotationAxis)), 0.0, 1.0, 1);
+            }
 
         }
 
         private System.Collections.Generic.List<GridCell> FindNeighbors(Vector3I cellPos, System.Collections.Generic.Dictionary<Vector3I, GridCell> cellIndices)
         {
-            PhysicsDirectSpaceState3D spaceState = GetWorld3D().DirectSpaceState;
 
             System.Collections.Generic.List<GridCell> result = new();
             foreach (Vector3I direction in Directions)
@@ -60,19 +82,21 @@ namespace CubeWorld
                 GridCell gridCellSelf = cellIndices[cellPos];
                 if (!aStar3D.ArePointsConnected(gridCellSelf.AStarPointId, gridCellNeighbor.AStarPointId))
                 {
-                    PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(
-                        gridCellNeighbor.Node.Position + Vector3.Up, gridCellNeighbor.Node.Position + Vector3.Down/* , 4096 */);
-
-                    Dictionary result1 = spaceState.IntersectRay(query);
-                    if (result1.Count != 0 && result1["normal"].AsVector3() != Vector3.Up)
+                    Array<Node> cellExits = gridCellSelf.Node.FindChildren("*", "StaticBody3D");
+                    Array<Node> neighborExits = gridCellNeighbor.Node.FindChildren("*", "StaticBody3D");
+                    bool shouldConnect = false;
+                    foreach (StaticBody3D cellExit in cellExits)
                     {
-
-                        System.Console.WriteLine("NORMAL" + result1["normal"]);
-                        System.Console.WriteLine("CROSS" + result1["normal"].AsVector3().Cross(Vector3.Up));
-                        System.Console.WriteLine("ANGLE" + Mathf.RadToDeg(result1["normal"].AsVector3().AngleTo(Vector3.Up)));
-                        // FIGURE OUT POINTS ON A PLANE BASED ON NORMAL AND POSITION (equation of a plane)
+                        foreach (StaticBody3D neighborExit in neighborExits)
+                        {
+                            if (cellExit.GlobalPosition.IsEqualApprox(neighborExit.GlobalPosition))
+                            {
+                                shouldConnect = true;
+                                break;
+                            }
+                        }
                     }
-                    result.Add(gridCellNeighbor);
+                    if (shouldConnect) result.Add(gridCellNeighbor);
                 }
             }
             return result;

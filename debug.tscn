@@ -1,10 +1,22 @@
-[gd_scene load_steps=6 format=3 uid="uid://bt5sl226wfj88"]
+[gd_scene load_steps=10 format=3 uid="uid://bt5sl226wfj88"]
 
 [ext_resource type="PackedScene" uid="uid://ggaf7pios5fi" path="res://models/cube.blend" id="1_1uwqr"]
 [ext_resource type="Script" uid="uid://okx3fsiwhki2" path="res://src/CubeController.cs" id="2_lvjdj"]
 [ext_resource type="Script" uid="uid://b8vj1d8r2x7kk" path="res://src/grid/GridManager.cs" id="3_16g7q"]
 [ext_resource type="PackedScene" uid="uid://cppa217x7ogvj" path="res://models/tile.tscn" id="3_rdi1l"]
 [ext_resource type="PackedScene" uid="uid://6b3aw45ukhs0" path="res://models/ramp.tscn" id="4_txpwr"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_16g7q"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_obyai"]
+albedo_color = Color(0.91759807, 0, 0.27975038, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_16g7q"]
+radius = 0.2
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e0a3d"]
+albedo_color = Color(1, 0.8666667, 0, 1)
 
 [node name="Debug" type="Node3D"]
 
@@ -20,8 +32,9 @@ size = 12.0
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.502166, -0.812775, -0.295339, 0.123945, -0.270351, 0.95475, -0.855843, -0.516049, -0.0350217, 0, 8.59069, 0)
 
-[node name="grid" type="Node3D" parent="."]
+[node name="grid" type="Node3D" parent="." node_paths=PackedStringArray("TestInstance")]
 script = ExtResource("3_16g7q")
+TestInstance = NodePath("MeshInstance3D")
 
 [node name="tile" parent="grid" instance=ExtResource("3_rdi1l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
@@ -310,3 +323,13 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 10, 0,
 
 [node name="ramp7" parent="grid" instance=ExtResource("4_txpwr")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 6, 0, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="grid"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1, 7)
+mesh = SubResource("CapsuleMesh_16g7q")
+surface_material_override/0 = SubResource("StandardMaterial3D_obyai")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="grid/MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.4000001)
+mesh = SubResource("SphereMesh_16g7q")
+surface_material_override/0 = SubResource("StandardMaterial3D_e0a3d")
