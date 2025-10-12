@@ -1,4 +1,3 @@
-using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -6,18 +5,16 @@ namespace CubeWorld
 {
     public partial class GridManager : Node3D
     {
-        [Export]
-        private MeshInstance3D TestInstance;
         private int TileWidth = 2;
 
-        private System.Collections.Generic.Dictionary<Vector3I, GridCell> cellIndices = new();
+        private System.Collections.Generic.Dictionary<Vector2I, GridCell> cellIndices = new();
 
         private AStar3DCustom aStar3D = new();
-        public readonly Vector3I[] Directions = {
-        Vector3I.Left,
-        Vector3I.Right,
-        Vector3I.Forward,
-        Vector3I.Back
+        public readonly Vector2I[] Directions = {
+        Vector2I.Left,
+        Vector2I.Right,
+        Vector2I.Up,
+        Vector2I.Down
     };
 
         public override void _Ready()
@@ -30,9 +27,9 @@ namespace CubeWorld
                 long id = aStar3D.GetAvailablePointId();
                 GridCell gridCell = new(cell, id);
                 aStar3D.AddPoint(id, cell.Position);
-                cellIndices[new((int)cell.Position.X, (int)cell.Position.Y, (int)cell.Position.Z)] = gridCell;
+                cellIndices[new((int)cell.Position.X, (int)cell.Position.Z)] = gridCell;
             }
-            foreach (Vector3I cellPos in cellIndices.Keys)
+            foreach (Vector2I cellPos in cellIndices.Keys)
             {
                 foreach (GridCell neighbor in FindNeighbors(cellPos, cellIndices))
                 {
@@ -40,64 +37,90 @@ namespace CubeWorld
                 }
             }
 
-            Vector3[] points = aStar3D.GetPointPath(cellIndices[new(0, 0, 0)].AStarPointId, cellIndices[new(10, 0, 12)].AStarPointId);
-
-            Tween tween = CreateTween();
-            for (int i = 0; i < points.Count(); i++)
-            {
-                Vector3 point = points[i];
-                Vector3 PrevPoint = Vector3.Zero;
-                if (i != 0)
-                {
-                    PrevPoint = points[i - 1];
-                }
-
-                tween.TweenProperty(TestInstance, "position", point + Vector3.Up, 1);
-                tween.Parallel().TweenMethod(
-                    Callable.From((Vector3 target) =>
-                    {
-                        TestInstance.RotateY(Mathf.Atan2(target.X, target.Z));
-                    }), PrevPoint, point, 0.2f);
-
-                // tween.Parallel().TweenMethod(
-                //     Callable.From((Vector3 target) =>
-                //     {
-                //         TestInstance.LookAt(target, Vector3.Up);
-                //     })
-                //     , new Vector3(PrevPoint.X, TestInstance.Position.Y, PrevPoint.Z), new Vector3(point.X, TestInstance.Position.Y, point.Z), 0.2f);
-                // tween.TweenMethod(Callable.From((float progress) => LerpTransform(progress, startTransform, rotationCenter, rotationAxis)), 0.0, 1.0, 1);
-            }
-
         }
 
-        private System.Collections.Generic.List<GridCell> FindNeighbors(Vector3I cellPos, System.Collections.Generic.Dictionary<Vector3I, GridCell> cellIndices)
+        /// <summary>
+        /// Generate path from Global Position to another Global Position
+        /// </summary>
+        /// <param name="fromGlobalPosition"></param>
+        /// <param name="toGlobalPosition"></param>
+        /// <returns>An array of points</returns>
+        public Vector3[] GetPathPoints(Vector3 fromGlobalPosition, Vector3 toGlobalPosition)
+        {
+            GridCell gridCellA = cellIndices[PositionToCell(fromGlobalPosition)];
+            GridCell gridCellB = cellIndices[PositionToCell(toGlobalPosition)];
+            if (gridCellA == null) GD.PrintErr("GridCell not found at fromGlobalPosition" + fromGlobalPosition.ToString());
+            if (gridCellB == null) GD.PrintErr("GridCell not found at toGlobalPosition" + toGlobalPosition.ToString());
+            if (gridCellA == null || gridCellB == null) return [];
+
+            return aStar3D.GetPointPath(gridCellA.AStarPointId, gridCellB.AStarPointId);
+        }
+
+        /// <summary>
+        /// Convert global position to cell position
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public Vector2I PositionToCell(Vector3 globalPosition)
+        {
+            Vector3 converted = (globalPosition / TileWidth).Floor();
+            return new Vector2I((int)converted.X, (int)converted.Z);
+        }
+
+
+        // public Vector3 CellToPosition(Vector3I cellPosition)
+        // {
+        //     Vector3 output = Vector3.Zero;
+        //     output.X = cellPosition.X* TileWidth;
+        //     output.Y = cellPosition.Y;
+        //     output.Z = cellPosition.Z* TileWidth;
+        //     return new Vector3(cellPosition) * TileWidth + (TileWidth / 2);
+        // }
+
+        /// <summary>
+        /// In each direction, check if the neighbors of the cellPos are "connected". 
+        /// Return "connected" cells as List.
+        /// </summary>
+        /// <param name="cellPos">position of "current" cell</param>
+        /// <param name="cellIndices">All cells</param>
+        /// <returns></returns>
+        private System.Collections.Generic.List<GridCell> FindNeighbors(Vector2I cellPos, System.Collections.Generic.Dictionary<Vector2I, GridCell> cellIndices)
         {
 
             System.Collections.Generic.List<GridCell> result = new();
-            foreach (Vector3I direction in Directions)
+            foreach (Vector2I direction in Directions)
             {
-                Vector3I neighborPos = cellPos + (direction * TileWidth);
+                // for this direction, the "neighbor" is a TileWidth away from the current cellPos
+                Vector2I neighborPos = cellPos + (direction * TileWidth);
+                // No neighbor? we're done!
                 if (!cellIndices.ContainsKey(neighborPos)) { continue; }
                 GridCell gridCellNeighbor = cellIndices[neighborPos];
                 GridCell gridCellSelf = cellIndices[cellPos];
-                if (!aStar3D.ArePointsConnected(gridCellSelf.AStarPointId, gridCellNeighbor.AStarPointId))
+
+                // Already connected? We're done!
+                if (aStar3D.ArePointsConnected(gridCellSelf.AStarPointId, gridCellNeighbor.AStarPointId)) { continue; }
+
+
+                // grab all the "exit" nodes from this cell
+                Array<Node> cellExits = gridCellSelf.Node.FindChildren("*", "StaticBody3D");
+                // grab all the "exit" nodes from neighbor cell
+                Array<Node> neighborExits = gridCellNeighbor.Node.FindChildren("*", "StaticBody3D");
+                // compare exits from each cell, if we have an overlapping position, this means the cells are "connected".
+                bool shouldConnect = false;
+                foreach (StaticBody3D cellExit in cellExits)
                 {
-                    Array<Node> cellExits = gridCellSelf.Node.FindChildren("*", "StaticBody3D");
-                    Array<Node> neighborExits = gridCellNeighbor.Node.FindChildren("*", "StaticBody3D");
-                    bool shouldConnect = false;
-                    foreach (StaticBody3D cellExit in cellExits)
+                    foreach (StaticBody3D neighborExit in neighborExits)
                     {
-                        foreach (StaticBody3D neighborExit in neighborExits)
+                        if (cellExit.GlobalPosition.IsEqualApprox(neighborExit.GlobalPosition))
                         {
-                            if (cellExit.GlobalPosition.IsEqualApprox(neighborExit.GlobalPosition))
-                            {
-                                shouldConnect = true;
-                                break;
-                            }
+                            shouldConnect = true;
+                            break;
                         }
                     }
-                    if (shouldConnect) result.Add(gridCellNeighbor);
                 }
+                // add to returned List result
+                if (shouldConnect) result.Add(gridCellNeighbor);
+
             }
             return result;
         }
