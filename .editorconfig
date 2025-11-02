@@ -4,3 +4,9 @@ root = true
 charset = utf-8
 indent_style = space
 indent_size = 2
+
+# IDE0009/IDE0003: Remove qualification
+dotnet_style_qualification_for_field = true
+dotnet_style_qualification_for_property = true
+dotnet_style_qualification_for_event = true
+dotnet_style_qualification_for_method = true

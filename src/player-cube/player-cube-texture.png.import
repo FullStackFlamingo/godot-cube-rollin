@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c31ucqh8nepa5"
-path.s3tc="res://.godot/imported/cube-text.png-a38fc83e41b51a5c0d046d38f4013b71.s3tc.ctex"
+uid="uid://1ebjse0s0o8t"
+path.s3tc="res://.godot/imported/player-cube-texture.png-86814ea01edca59e7e8ddeeaf3835245.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://src/player-cube/cube-text.png"
-dest_files=["res://.godot/imported/cube-text.png-a38fc83e41b51a5c0d046d38f4013b71.s3tc.ctex"]
+source_file="res://src/player-cube/player-cube-texture.png"
+dest_files=["res://.godot/imported/player-cube-texture.png-86814ea01edca59e7e8ddeeaf3835245.s3tc.ctex"]
 
 [params]
 

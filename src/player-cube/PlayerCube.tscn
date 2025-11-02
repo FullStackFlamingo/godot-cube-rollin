@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://borl4jf6jeuvo"]
+
+[ext_resource type="PackedScene" uid="uid://ggaf7pios5fi" path="res://src/player-cube/player-cube.blend" id="1_ex1en"]
+[ext_resource type="Script" uid="uid://okx3fsiwhki2" path="res://src/player-cube/PlayerCubeController.cs" id="2_higed"]
+
+[node name="PlayerCube" type="Node3D"]
+script = ExtResource("2_higed")
+
+[node name="player-cube" parent="." instance=ExtResource("1_ex1en")]

@@ -1,19 +1,17 @@
+namespace CubeWorld;
+
 using Godot;
 
-
-namespace CubeWorld
+public class GridCell
 {
-    public class GridCell
+    public Node3D Node;
+    public long AStarPointId;
+
+    public GridCell(Node3D node, long aStarPointId)
     {
-        public Node3D Node;
-        public long AStarPointId;
-
-        public GridCell(Node3D node, long aStarPointId)
-        {
-            AStarPointId = aStarPointId;
-            Node = node;
-        }
-
-
+        AStarPointId = aStarPointId;
+        Node = node;
     }
+
+
 }
