@@ -1,26 +1,29 @@
-[gd_scene load_steps=10 format=3 uid="uid://ci2mgvl56qk40"]
+[gd_scene load_steps=11 format=3 uid="uid://ci2mgvl56qk40"]
 
+[ext_resource type="Script" uid="uid://d31akw1yrrirc" path="res://src/game/LevelController.cs" id="1_7jnsn"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="1_g0od8"]
 [ext_resource type="Script" uid="uid://b8vj1d8r2x7kk" path="res://src/grid/GridManager.cs" id="1_r6pnp"]
 [ext_resource type="PackedScene" uid="uid://cppa217x7ogvj" path="res://src/grid/tile.tscn" id="2_f6t2u"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="2_o2e6r"]
 [ext_resource type="PackedScene" uid="uid://6b3aw45ukhs0" path="res://src/grid/ramp.tscn" id="3_g0od8"]
-[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="3_o2e6r"]
+[ext_resource type="PackedScene" uid="uid://cgdb0ugu8qi1y" path="res://src/cameras/GameCamera.tscn" id="3_o2e6r"]
 [ext_resource type="PackedScene" uid="uid://bbplny5lx1lj7" path="res://src/player/Player.tscn" id="4_o2e6r"]
 [ext_resource type="PackedScene" uid="uid://borl4jf6jeuvo" path="res://src/player-cube/PlayerCube.tscn" id="5_htjjf"]
 
-[sub_resource type="Resource" id="Resource_htjjf"]
+[sub_resource type="Resource" id="Resource_o2e6r"]
 script = ExtResource("2_o2e6r")
+metadata/_custom_type_script = "uid://8umksf8e80fw"
 
 [node name="Level1" type="Node3D"]
+script = ExtResource("1_7jnsn")
 
 [node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
 transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 5.257636, 5.8700747, 11.723755)
 top_level = true
 script = ExtResource("1_g0od8")
 follow_mode = 5
-follow_target = NodePath("../Grid/PlayerCube")
-tween_resource = SubResource("Resource_htjjf")
+follow_target = NodePath("../PlayerCube")
+tween_resource = SubResource("Resource_o2e6r")
 follow_damping = true
 follow_axis_lock = 2
 follow_distance = 8.0
@@ -28,16 +31,11 @@ dead_zone_width = 0.069
 dead_zone_height = 0.08
 spring_length = 8.0
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="GameCamera" parent="." instance=ExtResource("3_o2e6r")]
 transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 5.257636, 5.8700747, 11.723755)
 
-[node name="PhantomCameraHost" type="Node" parent="Camera3D"]
-process_priority = 300
-process_physics_priority = 300
-script = ExtResource("3_o2e6r")
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.5021659, -0.81277543, -0.29533973, 0.12394498, -0.2703511, 0.9547502, -0.8558429, -0.5160489, -0.035021674, 0, 8.59069, 0)
+transform = Transform3D(0.5021659, -0.81277543, -0.29533973, 0.12394498, -0.2703511, 0.9547502, -0.8558429, -0.5160489, -0.03502167, 0, 8.59069, 0)
 
 [node name="Grid" type="Node3D" parent="."]
 script = ExtResource("1_r6pnp")
@@ -332,9 +330,10 @@ transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 10, 0,
 [node name="ramp7" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 6, 0, 10)
 
-[node name="Player" parent="Grid" node_paths=PackedStringArray("GridManager") instance=ExtResource("4_o2e6r")]
+[node name="Player" parent="." node_paths=PackedStringArray("GridManager") instance=ExtResource("4_o2e6r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 6)
-GridManager = NodePath("..")
+skeleton = NodePath("../Grid")
+GridManager = NodePath("../Grid")
 
-[node name="PlayerCube" parent="Grid" instance=ExtResource("5_htjjf")]
+[node name="PlayerCube" parent="." instance=ExtResource("5_htjjf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, 6)

@@ -1,9 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://bt5sl226wfj88"]
+[gd_scene load_steps=2 format=3 uid="uid://bt5sl226wfj88"]
 
-[ext_resource type="Script" uid="uid://d31akw1yrrirc" path="res://src/globals/RootController.cs" id="1_bf3um"]
 [ext_resource type="PackedScene" uid="uid://ci2mgvl56qk40" path="res://src/levels/level-1.tscn" id="3_vvh5c"]
 
 [node name="Root" type="Node3D"]
-script = ExtResource("1_bf3um")
 
 [node name="Level1" parent="." instance=ExtResource("3_vvh5c")]

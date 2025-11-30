@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bbplny5lx1lj7"]
+[gd_scene load_steps=7 format=3 uid="uid://bbplny5lx1lj7"]
 
 [ext_resource type="Script" uid="uid://b5f11ugqcwr7h" path="res://src/player/PlayerController.cs" id="1_tehm3"]
+[ext_resource type="PackedScene" uid="uid://befhwhx4yjri7" path="res://src/actors/ComponentPathing.tscn" id="2_chb7w"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pbc7v"]
 
@@ -23,3 +24,5 @@ script = ExtResource("1_tehm3")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.4000001)
 mesh = SubResource("SphereMesh_chb7w")
 surface_material_override/0 = SubResource("StandardMaterial3D_g641l")
+
+[node name="ComponentPathing" parent="." instance=ExtResource("2_chb7w")]

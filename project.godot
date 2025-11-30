@@ -40,6 +40,10 @@ grid-cell=""
 grid-cell--ramp=""
 grid-cell__exit=""
 
+[layer_names]
+
+3d_physics/layer_13="tile"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

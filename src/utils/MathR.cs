@@ -1,7 +1,7 @@
 namespace CubeWorld;
 
 using Godot;
-
+using Godot.Collections;
 
 class MathR
 {
@@ -16,5 +16,10 @@ class MathR
         // # Set the result back
         return new Transform3D(rotated_basis, rotated_origin);
     }
-
+    public static PhysicsRayQueryParameters3D ScreenToWorldRayQueryParamters3D(Camera3D camera3D, Vector2 screenPosition, uint collisionMask = uint.MaxValue, Array<Rid> exclude = null)
+    {
+        Vector3 from = camera3D.ProjectRayOrigin(screenPosition);
+        Vector3 to = from + camera3D.ProjectRayNormal(screenPosition) * 1000 /*Ray Length */;
+        return PhysicsRayQueryParameters3D.Create(from, to, collisionMask, exclude);
+    }
 }

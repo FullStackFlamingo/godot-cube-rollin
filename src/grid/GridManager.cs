@@ -1,5 +1,6 @@
 namespace CubeWorld;
 
+using System;
 using Godot;
 using Godot.Collections;
 
@@ -46,7 +47,7 @@ public partial class GridManager : Node3D
     /// <param name="fromGlobalPosition"></param>
     /// <param name="toGlobalPosition"></param>
     /// <returns>An array of points</returns>
-    public Vector3[] GetPathPoints(Vector3 fromGlobalPosition, Vector3 toGlobalPosition)
+    public Vector3[] GetPointPath(Vector3 fromGlobalPosition, Vector3 toGlobalPosition)
     {
         GridCell gridCellA = cellIndices[PositionToCell(fromGlobalPosition)];
         GridCell gridCellB = cellIndices[PositionToCell(toGlobalPosition)];
@@ -64,12 +65,14 @@ public partial class GridManager : Node3D
     /// <returns></returns>
     public Vector2I PositionToCell(Vector3 globalPosition)
     {
-        Vector3 converted = (globalPosition / TileWidth).Floor();
-        return new Vector2I((int)converted.X, (int)converted.Z);
+        return new Vector2I(
+            (int)Math.Round(globalPosition.X / (double)TileWidth, MidpointRounding.AwayFromZero) * TileWidth,
+            (int)Math.Round(globalPosition.Z / (double)TileWidth, MidpointRounding.AwayFromZero) * TileWidth
+        );
     }
 
 
-    // public Vector3 CellToPosition(Vector3I cellPosition)
+    // public Vector3 CellToPosition(Vector2I cellPosition)
     // {
     //     Vector3 output = Vector3.Zero;
     //     output.X = cellPosition.X* TileWidth;
