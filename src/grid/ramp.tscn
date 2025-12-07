@@ -29,7 +29,21 @@ transform = Transform3D(1.0000005, 0, 0, 0, 1.0000005, 0, 0, 0, 1, -1, 0.5, 0)
 shape = SubResource("SphereShape3D_mxs7d")
 debug_color = Color(0.96205455, 1.4439225e-06, 0.504004, 1)
 
-[node name="StaticBody3D5" type="StaticBody3D" parent="." index="3"]
+[node name="StaticBody3D4" type="StaticBody3D" parent="." index="3" groups=["grid-cell__exit"]]
+transform = Transform3D(1.000001, 0, 0, 0, 1.000001, 0, 0, 0, 1, 0, 0.2, 1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D4" index="0"]
+shape = SubResource("SphereShape3D_mxs7d")
+debug_color = Color(0.96205455, 1.4439225e-06, 0.504004, 1)
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="." index="4" groups=["grid-cell__exit"]]
+transform = Transform3D(1.0000014, 0, 0, 0, 1.0000014, 0, 0, 0, 1, 0, 0.2, -1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3" index="0"]
+shape = SubResource("SphereShape3D_mxs7d")
+debug_color = Color(0.96205455, 1.4439225e-06, 0.504004, 1)
+
+[node name="StaticBody3D5" type="StaticBody3D" parent="." index="5"]
 collision_layer = 4096
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D5" index="0"]
