@@ -22,4 +22,43 @@ class MathR
         Vector3 to = from + camera3D.ProjectRayNormal(screenPosition) * 1000 /*Ray Length */;
         return PhysicsRayQueryParameters3D.Create(from, to, collisionMask, exclude);
     }
+
+    /// <summary>
+    /// Calculates the shortest difference between two given angles.
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+    public static float DeltaAngle(float current, float target)
+    {
+        float delta = MathR.Repeat(target - current, Mathf.Pi * 2);
+        if (delta > Mathf.Pi)
+            delta -= Mathf.Pi * 2;
+        return delta;
+    }
+
+    /// <summary>
+    /// Calculates the shortest difference between two given angles.
+    /// </summary>
+    /// <param name="current"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+    public static float DeltaAngleDegrees(float current, float target)
+    {
+        float delta = MathR.Repeat(target - current, 360.0F);
+        if (delta > 180.0F)
+            delta -= 360.0F;
+        return delta;
+    }
+    /// <summary>
+    ///  Loops the value t, so that it is never larger than max and never smaller than 0.
+    /// </summary>
+    /// <param name="t"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static float Repeat(float t, float max)
+    {
+        return Mathf.Clamp(t - Mathf.Floor(t / max) * max, 0.0f, max);
+    }
+
 }

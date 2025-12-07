@@ -1,5 +1,6 @@
 namespace CubeWorld;
 
+using System;
 using Godot;
 
 
@@ -9,6 +10,8 @@ public partial class ComponentPathing : Node
     public delegate void PathRequestedEventHandler(Vector3 from, Vector3 target, Callable mthd);
 
     private Node3D Parent;
+
+    private bool busy = false;
 
     public override void _Ready()
     {
@@ -22,12 +25,13 @@ public partial class ComponentPathing : Node
 
     private void ApplyPath(Vector3[] points)
     {
-        if (points.Length == 0 || this.Parent == null) return;
-
-
-
-        Tween tween = CreateTween();
-        for (int i = 0; i < points.Length; i++)
+        if (this.busy) return;
+        // must have at least 1 points to move between, and Parent to exist
+        if (points.Length < 2 || this.Parent == null) return;
+        this.busy = true;
+        Tween tween = CreateTween().SetTrans(Tween.TransitionType.Linear);
+        // `point 0` should be Parent.Position anyway, so start at `point 1`
+        for (int i = 1; i < points.Length; i++)
         {
             Vector3 point = points[i];
             Vector3 PrevPoint = Vector3.Zero;
@@ -36,14 +40,21 @@ public partial class ComponentPathing : Node
                 PrevPoint = points[i - 1];
             }
 
-            tween.TweenMethod(
-                Callable.From((Vector3 target) =>
-                {
-                    this.Parent.LookAt(target);
-                })
-                , point + Vector3.Up, PrevPoint.MoveToward(point, 1) + Vector3.Up, 0.3f);
-            tween.Parallel().TweenProperty(this.Parent, "position", point + Vector3.Up, 0.3f);
+            Vector2 dir = new Vector2(PrevPoint.X - point.X, PrevPoint.Z - point.Z).Normalized();
 
+            tween.TweenMethod(
+                Callable.From((float progress) =>
+                {
+                    float shortestRotation = MathR.DeltaAngle(this.Parent.Rotation.Y, Mathf.Atan2(dir.X, dir.Y));
+                    GD.Print("dir: " + dir + " , shortestRotation: " + shortestRotation);
+                    //https://forum.godotengine.org/t/lerping-a-2d-angle-while-going-trought-the-shortest-possible-distance/24124/3
+                    Vector3 TargetRotation = new Vector3(this.Parent.Rotation.X, this.Parent.Rotation.Y + shortestRotation, this.Parent.Rotation.Z);
+
+                    this.Parent.Rotation = this.Parent.Rotation.Lerp(TargetRotation, progress);
+                    this.Parent.Position = this.Parent.Position.Lerp(point + Vector3.Up, progress);
+                })
+                , 0f, 1f, 0.3f);
         }
+        tween.Finished += () => this.busy = false;
     }
 }
