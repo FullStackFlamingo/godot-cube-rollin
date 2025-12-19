@@ -51,8 +51,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 shape = SubResource("SphereShape3D_gwead")
 debug_color = Color(0.96862745, 0, 0.47843137, 1)
 
-[node name="StaticBody3D5" type="StaticBody3D" parent="." index="5"]
-collision_layer = 4097
+[node name="StaticBody3D5" type="StaticBody3D" parent="." index="5" groups=["grid-cell__floor"]]
+collision_layer = 4096
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D5" index="0"]

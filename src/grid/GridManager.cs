@@ -61,8 +61,8 @@ public partial class GridManager : Node3D
     /// <summary>
     /// Convert global position to cell position
     /// </summary>
-    /// <param name="position"></param>
-    /// <returns></returns>
+    /// <param name="globalPosition"></param>
+    /// <returns>Vector2I</returns>
     public Vector2I PositionToCell(Vector3 globalPosition)
     {
         return new Vector2I(
@@ -71,6 +71,17 @@ public partial class GridManager : Node3D
         );
     }
 
+    /// <summary>
+    /// Get GridCell at global position
+    /// </summary>
+    /// <param name="globalPosition"></param>
+    /// <returns>GridCell</returns>
+    public GridCell GetGridCellAtPosition(Vector3 globalPosition)
+    {
+        Vector2I cellPos = this.PositionToCell(globalPosition);
+        if (!this.cellIndices.ContainsKey(cellPos)) return null;
+        return this.cellIndices[cellPos];
+    }
 
     // public Vector3 CellToPosition(Vector2I cellPosition)
     // {
@@ -115,10 +126,13 @@ public partial class GridManager : Node3D
             {
                 foreach (StaticBody3D neighborExit in neighborExits)
                 {
-                    if (cellExit.GlobalPosition.IsEqualApprox(neighborExit.GlobalPosition))
+                    if (cellExit.IsInGroup("grid-cell__exit") && neighborExit.IsInGroup("grid-cell__exit"))
                     {
-                        shouldConnect = true;
-                        break;
+                        if (cellExit.GlobalPosition.IsEqualApprox(neighborExit.GlobalPosition))
+                        {
+                            shouldConnect = true;
+                            break;
+                        }
                     }
                 }
             }

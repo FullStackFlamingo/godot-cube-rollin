@@ -1,7 +1,7 @@
 namespace CubeWorld;
 
 using Godot;
-
+using Godot.Collections;
 
 public partial class PlayerCubeController : Node3D
 {
@@ -10,6 +10,9 @@ public partial class PlayerCubeController : Node3D
     private float Dimension = 2;
 
     private Camera3D currentCam;
+
+    [Signal]
+    public delegate void TileRequestedAtGobalPositionEventHandler(Vector3 globalPosition, Callable mthd);
 
     public override void _Ready()
     {
@@ -22,36 +25,42 @@ public partial class PlayerCubeController : Node3D
     {
         Vector2 input = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
         if (input.Length() != 0)
-        {
+        {   // ensure if X axis has value, Y axis is 0, to prevent diagonal movement 
             Vector3 direction = new Vector3(Mathf.Sign(input.X), 0, input.X == 0 ? Mathf.Sign(input.Y) : 0);
             // direction = direction.Rotated(Vector3.Up, currentCam.Rotation.Y);
-
-            this.RotateCube(direction, Speed);
+            this.EmitSignal("TileRequestedAtGobalPosition", this.GlobalPosition + (direction * 0.5f * Dimension), Callable.From((GridCell targetCell) => this.RotateCube(direction, targetCell)));
         }
 
     }
 
-    private void LerpTransform(float progress, Transform3D startTransform, Vector3 rotationCenter, Vector3 rotationAxis)
+    private void LerpTransform(float progress, Transform3D startTransform, Vector3 pivot, Vector3 rotationAxis, float targetAngle)
     {
-
-        this.GlobalTransform = MathR.RotateAround(startTransform, rotationCenter, rotationAxis, Mathf.DegToRad(90 * progress));
-
+        this.GlobalTransform = MathR.RotateAround(startTransform, pivot, rotationAxis, Mathf.DegToRad(targetAngle * progress));
     }
-    public void RotateCube(Vector3 direction, float speed)
+    public void RotateCube(Vector3 direction, GridCell targetCell)
     {
-        if (IsMoving) return;
+        if (IsMoving || targetCell == null) return;
         IsMoving = true;
-        Vector3 rotationCenter = this.GlobalTransform.Origin + (Vector3.Down * 0.5f * Dimension) + (direction * 0.5f * Dimension);
+        Vector3 pivot = this.GlobalTransform.Origin + (Vector3.Down * 0.5f * Dimension) + (direction * 0.5f * Dimension);
 
         Vector3 rotationAxis = Vector3.Up.Cross(direction);
         Transform3D startTransform = this.GlobalTransform;
 
+        float targetAngle = 90;
+        // Array<Node> targetCellStaticBody = targetCell.Node.FindChildren("*", "StaticBody3D");
+        // foreach (StaticBody3D staticBody in targetCellStaticBody)
+        // {
+        //     if (staticBody.IsInGroup("grid-cell__floor"))
+        //     {
+        //         GD.Print("DOT" + direction.Dot(staticBody.GlobalRotationDegrees));
+        //         GD.Print("AngleTo" + Mathf.RadToDeg(direction.AngleTo(staticBody.GlobalRotation)));
+        //         targetAngle = direction.Dot(staticBody.GlobalRotationDegrees);
+        //     }
+        // }
+
         Tween tween = this.CreateTween();
-        tween.TweenMethod(Callable.From((float progress) => this.LerpTransform(progress, startTransform, rotationCenter, rotationAxis)), 0.0, 1.0, speed);
-        tween.TweenCallback(Callable.From(() =>
-        {
-            IsMoving = false;
-        }));
+        tween.TweenMethod(Callable.From((float progress) => this.LerpTransform(progress, startTransform, pivot, rotationAxis, targetAngle)), 0.0, 1.0, Speed);
+        tween.TweenCallback(Callable.From(() => IsMoving = false));
         IsMoving = true;
 
     }

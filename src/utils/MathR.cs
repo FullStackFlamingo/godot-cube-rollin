@@ -5,6 +5,14 @@ using Godot.Collections;
 
 class MathR
 {
+    /// <summary>
+    /// Rotate a Transform3D around a pivot point, on an axis, with provided angle in Radians
+    /// </summary>
+    /// <param name="trans">Original Transform</param>
+    /// <param name="pivotPoint">Pivot Point e.g. Vector3(1,1,1) bottom corner of cube object</param>
+    /// <param name="axis">Axis, e.g. Vector3(1,0,0)</param>
+    /// <param name="angle">Angle in Radians</param>
+    /// <returns>Modified transform</returns>
     public static Transform3D RotateAround(Transform3D trans, Vector3 pivotPoint, Vector3 axis, float angle)
     {
         // # Rotate its basis

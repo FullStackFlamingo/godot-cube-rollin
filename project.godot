@@ -39,6 +39,7 @@ enabled=PackedStringArray("res://addons/phantom_camera/plugin.cfg")
 grid-cell=""
 grid-cell--ramp=""
 grid-cell__exit=""
+grid-cell__floor=""
 
 [layer_names]
 

@@ -2,7 +2,7 @@ namespace CubeWorld;
 
 using Godot;
 
-public class GridCell
+public partial class GridCell : GodotObject
 {
     public Node3D Node;
     public long AStarPointId;
