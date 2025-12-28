@@ -1,6 +1,7 @@
 namespace CubeWorld;
 
 using System;
+using System.Linq;
 using Godot;
 using Godot.Collections;
 
@@ -49,8 +50,8 @@ public partial class GridManager : Node3D
     /// <returns>An array of points</returns>
     public Vector3[] GetPointPath(Vector3 fromGlobalPosition, Vector3 toGlobalPosition)
     {
-        GridCell gridCellA = cellIndices[PositionToCell(fromGlobalPosition)];
-        GridCell gridCellB = cellIndices[PositionToCell(toGlobalPosition)];
+        GridCell gridCellA = cellIndices.ContainsKey(PositionToCell(fromGlobalPosition)) ? cellIndices[PositionToCell(fromGlobalPosition)] : null;
+        GridCell gridCellB = cellIndices.ContainsKey(PositionToCell(toGlobalPosition)) ? cellIndices[PositionToCell(toGlobalPosition)] : null;
         if (gridCellA == null) GD.PrintErr("GridCell not found at fromGlobalPosition" + fromGlobalPosition.ToString());
         if (gridCellB == null) GD.PrintErr("GridCell not found at toGlobalPosition" + toGlobalPosition.ToString());
         if (gridCellA == null || gridCellB == null) return [];
@@ -58,6 +59,23 @@ public partial class GridManager : Node3D
         return aStar3D.GetPointPath(gridCellA.AStarPointId, gridCellB.AStarPointId);
     }
 
+    /// <summary>
+    /// Generate path of GridCells from Global Position to another Global Position
+    /// </summary>
+    /// <param name="fromGlobalPosition"></param>
+    /// <param name="toGlobalPosition"></param>
+    /// <returns>An Godot Array<GridCell>, </returns>
+    public Array<GridCell> GetGridCellPath(Vector3 fromGlobalPosition, Vector3 toGlobalPosition)
+    {
+        Vector3[] pointPath = this.GetPointPath(fromGlobalPosition, toGlobalPosition);
+        // Godot Array is `Variant` compatible, for using in Callable
+        Array<GridCell> output = new Array<GridCell>();
+        foreach (Vector3 point in pointPath)
+        {
+            output.Add(this.cellIndices[this.PositionToCell(point)]);
+        }
+        return output;
+    }
     /// <summary>
     /// Convert global position to cell position
     /// </summary>

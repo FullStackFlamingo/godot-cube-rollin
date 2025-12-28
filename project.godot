@@ -43,6 +43,7 @@ grid-cell__floor=""
 
 [layer_names]
 
+3d_physics/layer_2="cube"
 3d_physics/layer_13="tile"
 
 [physics]

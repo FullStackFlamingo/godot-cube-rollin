@@ -1,6 +1,7 @@
 namespace CubeWorld;
 
 using Godot;
+using Godot.Collections;
 
 public partial class LevelController : Node
 {
@@ -12,9 +13,9 @@ public partial class LevelController : Node
         this.GridManager = GDExtra.GetChildrenOfType<GridManager>(this, true)[0];
         this.PlayerCubeController = GDExtra.GetChildrenOfType<PlayerCubeController>(this, true)[0];
 
-        PlayerCubeController.TileRequestedAtGobalPosition += this.GetTileAtPosition;
+        PlayerCubeController.GridCellPathRequested += this.GetGridCellPath;
 
-        Godot.Collections.Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
+        Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
         foreach (var item in componentPathings)
         {
             item.PathRequested += this.GetPointPath;
@@ -22,18 +23,18 @@ public partial class LevelController : Node
     }
     public override void _ExitTree()
     {
-        PlayerCubeController.TileRequestedAtGobalPosition -= this.GetTileAtPosition;
+        PlayerCubeController.GridCellPathRequested -= this.GetGridCellPath;
 
-        Godot.Collections.Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
+        Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
         foreach (var item in componentPathings)
         {
             item.PathRequested -= this.GetPointPath;
         }
     }
-    private void GetTileAtPosition(Vector3 targetGlobalPosition, Callable mthd)
+    private void GetGridCellPath(Vector3 fromGlobalPosition, Vector3 targetGlobalPosition, Callable mthd)
     {
-        GridCell found = this.GridManager.GetGridCellAtPosition(targetGlobalPosition);
-        mthd.Call(found);
+        Array<GridCell> blar = this.GridManager.GetGridCellPath(fromGlobalPosition, targetGlobalPosition);
+        mthd.Call(blar);
     }
     private void GetPointPath(Vector3 fromGlobalPosition, Vector3 targetGlobalPosition, Callable mthd)
     {
