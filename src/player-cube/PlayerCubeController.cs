@@ -46,7 +46,7 @@ public partial class PlayerCubeController : Node3D
                     }
                     else
                     {
-                        GD.Print("Cube path request was not 2 points, therefore its too long or too short! No rolling for Cubey!");
+                        GD.Print("Cube path request was not 2 points (It was " + gridCellPoints.Count + " points), therefore its too long or too short! No rolling for Cubey!");
                     }
                 }));
             }
@@ -70,18 +70,20 @@ public partial class PlayerCubeController : Node3D
         // Calculate angle between Tile and Cube, to use for target roll
         if (this.PendingRotationTargetCell != null && this.PendingRotationDirection != Vector3.Zero)
         {
-            Vector3 positionTile = this.PendingRotationTargetCell.Node.GlobalPosition;
-            GD.Print("positionTile =" + positionTile);
-            PhysicsRayQueryParameters3D rayQueryTile = PhysicsRayQueryParameters3D.Create(positionTile + Vector3.Up, positionTile + Vector3.Down, LAYER13_TILE);
-            Dictionary resultTile = this.GetWorld3D().DirectSpaceState.IntersectRay(rayQueryTile);
-            Vector3 normalTile = Vector3.Zero;
-            if (resultTile.Count != 0)
+
+            // normal of target tile, to calculate angle 
+            Vector3 positionTargetTile = this.PendingRotationTargetCell.Node.GlobalPosition;
+            PhysicsRayQueryParameters3D rayQueryTargetTile = PhysicsRayQueryParameters3D.Create(positionTargetTile + Vector3.Up, positionTargetTile + Vector3.Down, LAYER13_TILE);
+            Dictionary resultTargetTile = this.GetWorld3D().DirectSpaceState.IntersectRay(rayQueryTargetTile);
+            Vector3 normalTargetTile = Vector3.Zero;
+            if (resultTargetTile.Count != 0)
             {
-                normalTile = resultTile["normal"].As<Vector3>();
+                normalTargetTile = resultTargetTile["normal"].As<Vector3>();
             }
 
+            // normal of cube facing direction, to calculate angle 
             Vector3 positionCube = this.GlobalPosition;
-            PhysicsRayQueryParameters3D rayQueryCube = PhysicsRayQueryParameters3D.Create(positionCube + (PendingRotationDirection * 3), positionCube, LAYER2_CUBE);
+            PhysicsRayQueryParameters3D rayQueryCube = PhysicsRayQueryParameters3D.Create(positionCube + (this.PendingRotationDirection * 3), positionCube, LAYER2_CUBE);
             Dictionary resultCube = this.GetWorld3D().DirectSpaceState.IntersectRay(rayQueryCube);
             Vector3 normalCube = Vector3.Zero;
             if (resultCube.Count != 0)
@@ -89,45 +91,63 @@ public partial class PlayerCubeController : Node3D
                 normalCube = resultCube["normal"].As<Vector3>();
             }
 
-            GD.Print("normalTile = " + normalTile);
-            GD.Print("normalCube = " + normalCube);
-
-            this.PendingRotationTargetCell = null;
-            if (normalTile != Vector3.Zero && normalCube != Vector3.Zero)
+            // normal of current tile, for rotation axis
+            PhysicsRayQueryParameters3D rayQueryCurrentTile = PhysicsRayQueryParameters3D.Create(positionCube + (Vector3.Up * 5), positionCube + (Vector3.Down * 5), LAYER13_TILE);
+            Dictionary resultCurrentTile = this.GetWorld3D().DirectSpaceState.IntersectRay(rayQueryCurrentTile);
+            Vector3 normalCurrentTile = Vector3.Zero;
+            if (resultCurrentTile.Count != 0)
             {
-                float angle = Mathf.RadToDeg(normalCube.AngleTo(normalTile));
-                GD.Print("angle = " + angle);
-                // angle = 90;
-                this.RotateCube(this.PendingRotationDirection, 90);
+                normalCurrentTile = resultCurrentTile["normal"].As<Vector3>();
             }
+            Vector3 pivot = Vector3.Inf;
+            Array<Node> targetCellStaticBody = this.PendingRotationTargetCell.Node.FindChildren("*", "StaticBody3D");
+            Vector3 approxPivotLocation = this.PendingRotationTargetCell.Node.GlobalTransform.Origin - (this.PendingRotationDirection * 0.5f * Dimension);
+
+
+            // use the closest tile `exit` to the direction we're going as the pivot point to rotate the cube.
+            // this is "good enough", even though we are not using the cube itself to find its bottom edge to pivot around, which is tricky when we are already on a slope!
+            foreach (StaticBody3D staticBody in targetCellStaticBody)
+            {
+                if (staticBody.IsInGroup("grid-cell__exit"))
+                {
+                    float currentDistance = pivot.DistanceTo(approxPivotLocation);
+                    float staticBodyDistance = staticBody.GlobalPosition.DistanceTo(approxPivotLocation);
+                    if (staticBodyDistance < currentDistance)
+                    {
+                        pivot = staticBody.GlobalPosition;
+                    }
+                }
+            }
+
+            if (normalTargetTile != Vector3.Zero && normalCube != Vector3.Zero && normalCurrentTile != Vector3.Zero && pivot != Vector3.Inf)
+            {
+                bool isX = this.PendingRotationDirection.X != 0;
+                Vector2 normTile = new Vector2(isX ? normalTargetTile.X : normalTargetTile.Z, normalTargetTile.Y).Normalized();
+                Vector2 normCube = new Vector2(isX ? normalCube.X : normalCube.Z, normalCube.Y).Normalized();
+                // float angle = MathR.DeltaAngleDegrees(0, Mathf.Abs(Mathf.RadToDeg(normTile.AngleTo(normCube))));
+                float angle = MathR.DeltaAngleDegrees(0, 180 - Mathf.Abs(Mathf.RadToDeg(normTile.AngleTo(normCube))));
+                // angle = 90;
+                Vector3 rotationAxis = normalCurrentTile.Cross(this.PendingRotationDirection).Normalized();
+
+                this.RotateCube(pivot, rotationAxis, angle);
+            }
+            this.PendingRotationTargetCell = null;
+            this.PendingRotationDirection = Vector3.Zero;
 
         }
     }
-    public void RotateCube(Vector3 direction, float targetAngle = 90)
+    public void RotateCube(Vector3 pivot, Vector3 rotationAxis, float targetAngle = 90)
     {
         if (IsMoving) return;
         IsMoving = true;
-        Vector3 pivot = this.GlobalTransform.Origin + (Vector3.Down * 0.5f * Dimension) + (direction * 0.5f * Dimension);
+        // Vector3 pivot = this.GlobalTransform.Origin + (Vector3.Down * 0.5f * Dimension) + (direction * 0.5f * Dimension);
 
-        Vector3 rotationAxis = Vector3.Up.Cross(direction);
         Transform3D startTransform = this.GlobalTransform;
-
-        // Array<Node> targetCellStaticBody = targetCell.Node.FindChildren("*", "StaticBody3D");
-        // foreach (StaticBody3D staticBody in targetCellStaticBody)
-        // {
-        //     if (staticBody.IsInGroup("grid-cell__floor"))
-        //     {
-        //         GD.Print("DOT" + direction.Dot(staticBody.GlobalRotationDegrees));
-        //         GD.Print("AngleTo" + Mathf.RadToDeg(direction.AngleTo(staticBody.GlobalRotation)));
-        //         targetAngle = direction.Dot(staticBody.GlobalRotationDegrees);
-        //     }
-        // }
 
         Tween tween = this.CreateTween();
         tween.TweenMethod(Callable.From((float progress) => this.LerpTransform(progress, startTransform, pivot, rotationAxis, targetAngle)), 0.0, 1.0, Speed);
         tween.TweenCallback(Callable.From(() => IsMoving = false));
         IsMoving = true;
-        this.PendingRotationDirection = Vector3.Zero;
 
     }
 
