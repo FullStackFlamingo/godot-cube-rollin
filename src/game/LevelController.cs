@@ -18,7 +18,7 @@ public partial class LevelController : Node
         Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
         foreach (var item in componentPathings)
         {
-            item.PathRequested += this.GetPointPath;
+            item.GridCellPathRequested += this.GetGridCellPath;
         }
     }
     public override void _ExitTree()
@@ -28,16 +28,11 @@ public partial class LevelController : Node
         Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
         foreach (var item in componentPathings)
         {
-            item.PathRequested -= this.GetPointPath;
+            item.GridCellPathRequested -= this.GetGridCellPath;
         }
     }
     private void GetGridCellPath(Vector3 fromGlobalPosition, Vector3 targetGlobalPosition, Callable mthd)
     {
-        Array<GridCell> blar = this.GridManager.GetGridCellPath(fromGlobalPosition, targetGlobalPosition);
-        mthd.Call(blar);
-    }
-    private void GetPointPath(Vector3 fromGlobalPosition, Vector3 targetGlobalPosition, Callable mthd)
-    {
-        mthd.Call(this.GridManager.GetPointPath(fromGlobalPosition, targetGlobalPosition));
+        mthd.Call(this.GridManager.GetGridCellPath(fromGlobalPosition, targetGlobalPosition));
     }
 }

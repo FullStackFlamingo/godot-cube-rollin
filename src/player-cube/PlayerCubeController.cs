@@ -72,7 +72,7 @@ public partial class PlayerCubeController : Node3D
         {
 
             // normal of target tile, to calculate angle 
-            Vector3 positionTargetTile = this.PendingRotationTargetCell.Node.GlobalPosition;
+            Vector3 positionTargetTile = this.PendingRotationTargetCell.GlobalPosition;
             PhysicsRayQueryParameters3D rayQueryTargetTile = PhysicsRayQueryParameters3D.Create(positionTargetTile + Vector3.Up, positionTargetTile + Vector3.Down, LAYER13_TILE);
             Dictionary resultTargetTile = this.GetWorld3D().DirectSpaceState.IntersectRay(rayQueryTargetTile);
             Vector3 normalTargetTile = Vector3.Zero;
@@ -100,8 +100,8 @@ public partial class PlayerCubeController : Node3D
                 normalCurrentTile = resultCurrentTile["normal"].As<Vector3>();
             }
             Vector3 pivot = Vector3.Inf;
-            Array<Node> targetCellStaticBody = this.PendingRotationTargetCell.Node.FindChildren("*", "StaticBody3D");
-            Vector3 approxPivotLocation = this.PendingRotationTargetCell.Node.GlobalTransform.Origin - (this.PendingRotationDirection * 0.5f * Dimension);
+            Array<Node> targetCellStaticBody = this.PendingRotationTargetCell.FindChildren("*", "StaticBody3D");
+            Vector3 approxPivotLocation = this.PendingRotationTargetCell.GlobalTransform.Origin - (this.PendingRotationDirection * 0.5f * Dimension);
 
 
             // use the closest tile `exit` to the direction we're going as the pivot point to rotate the cube.

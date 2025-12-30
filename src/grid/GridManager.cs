@@ -25,12 +25,11 @@ public partial class GridManager : Node3D
         base._Ready();
         Array<Node> allCells = GetTree().GetNodesInGroup("grid-cell");
 
-        foreach (Node3D cell in allCells)
+        foreach (GridCell cell in allCells)
         {
-            long id = aStar3D.GetAvailablePointId();
-            GridCell gridCell = new(cell, id);
-            aStar3D.AddPoint(id, cell.Position);
-            cellIndices[new((int)cell.Position.X, (int)cell.Position.Z)] = gridCell;
+            cell.AStarPointId = aStar3D.GetAvailablePointId();
+            aStar3D.AddPoint(cell.AStarPointId, cell.Position);
+            cellIndices[new((int)cell.Position.X, (int)cell.Position.Z)] = cell;
         }
         foreach (Vector2I cellPos in cellIndices.Keys)
         {
@@ -135,9 +134,9 @@ public partial class GridManager : Node3D
 
 
             // grab all the "exit" nodes from this cell
-            Array<Node> cellExits = gridCellSelf.Node.FindChildren("*", "StaticBody3D");
+            Array<Node> cellExits = gridCellSelf.FindChildren("*", "StaticBody3D");
             // grab all the "exit" nodes from neighbor cell
-            Array<Node> neighborExits = gridCellNeighbor.Node.FindChildren("*", "StaticBody3D");
+            Array<Node> neighborExits = gridCellNeighbor.FindChildren("*", "StaticBody3D");
             // compare exits from each cell, if we have an overlapping position, this means the cells are "connected".
             bool shouldConnect = false;
             foreach (StaticBody3D cellExit in cellExits)

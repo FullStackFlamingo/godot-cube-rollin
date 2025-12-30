@@ -1,13 +1,12 @@
 namespace CubeWorld;
 
-using System;
 using Godot;
-
+using Godot.Collections;
 
 public partial class ComponentPathing : Node
 {
     [Signal]
-    public delegate void PathRequestedEventHandler(Vector3 from, Vector3 target, Callable mthd);
+    public delegate void GridCellPathRequestedEventHandler(Vector3 from, Vector3 target, Callable mthd);
 
     private Node3D Parent;
     [Export]
@@ -26,24 +25,24 @@ public partial class ComponentPathing : Node
 
     public void RequestPath(Vector3 fromGlobalPosition, Vector3 targGlobaletPosition)
     {
-        this.EmitSignal("PathRequested", fromGlobalPosition, targGlobaletPosition, Callable.From((Vector3[] points) => this.ApplyPath(points)));
+        this.EmitSignal("GridCellPathRequested", fromGlobalPosition, targGlobaletPosition, Callable.From((Array<GridCell> points) => this.ApplyPath(points)));
     }
 
-    private void ApplyPath(Vector3[] points)
+    private void ApplyPath(Array<GridCell> points)
     {
         if (this.busy) return;
         // must have at least 1 points to move between, and Parent to exist
-        if (points.Length < 2 || this.Parent == null) return;
+        if (points.Count < 2 || this.Parent == null) return;
         this.busy = true;
         Tween tween = CreateTween().SetTrans(Tween.TransitionType.Linear);
         // `point 0` should be Parent.Position anyway, so start at `point 1`
-        for (int i = 1; i < points.Length; i++)
+        for (int i = 1; i < points.Count; i++)
         {
             // In this loop, pre-caluclation position and rotation of `from` and `to` Vectors, to generate tweens
 
-            Vector3 point = points[i];
+            Vector3 point = points[i].Position;
             Vector3 prevPoint = Vector3.Zero;
-            if (i != 0) prevPoint = points[i - 1];
+            if (i != 0) prevPoint = points[i - 1].Position;
 
             // POSITION - TO/FROM
             // tween from this position, either current position or last point position
@@ -55,7 +54,7 @@ public partial class ComponentPathing : Node
             // ROTATION - TO/FROM
 
             Vector3 prevPrevPoint = this.Parent.Position;
-            if (i > 1) prevPrevPoint = points[i - 2];
+            if (i > 1) prevPrevPoint = points[i - 2].Position;
             Vector3 fromRotation = this.Parent.Rotation;
             if (i > 1)
             {
