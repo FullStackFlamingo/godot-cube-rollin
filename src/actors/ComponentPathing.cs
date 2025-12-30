@@ -23,9 +23,9 @@ public partial class ComponentPathing : Node
         // this.ParentOriginOffset = Vector3.Up / 2 * GDExtra.GetChildrenOfType<MeshInstance3D>(this.Parent, true)[0].GetAabb().Size.Y;
     }
 
-    public void RequestPath(Vector3 fromGlobalPosition, Vector3 targGlobaletPosition)
+    public void RequestPath(Vector3 fromGlobalPosition, Vector3 toGlobalPosition)
     {
-        this.EmitSignal("GridCellPathRequested", fromGlobalPosition, targGlobaletPosition, Callable.From((Array<GridCell> points) => this.ApplyPath(points)));
+        this.EmitSignal("GridCellPathRequested", fromGlobalPosition, toGlobalPosition, Callable.From((Array<GridCell> points) => this.ApplyPath(points)));
     }
 
     private void ApplyPath(Array<GridCell> points)
@@ -47,14 +47,20 @@ public partial class ComponentPathing : Node
             // POSITION - TO/FROM
             // tween from this position, either current position or last point position
             Vector3 fromPosition = this.Parent.Position;
-            if (i != 0) fromPosition = prevPoint + ParentOriginOffset;
+            if (i != 0)
+            {
+                fromPosition = prevPoint + ParentOriginOffset;
+            }
             // tween to this next point
             Vector3 toPosition = point + ParentOriginOffset;
 
             // ROTATION - TO/FROM
 
             Vector3 prevPrevPoint = this.Parent.Position;
-            if (i > 1) prevPrevPoint = points[i - 2].Position;
+            if (i > 1)
+            {
+                prevPrevPoint = points[i - 2].Position;
+            }
             Vector3 fromRotation = this.Parent.Rotation;
             if (i > 1)
             {

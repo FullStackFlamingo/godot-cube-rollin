@@ -31,8 +31,8 @@ public partial class LevelController : Node
             item.GridCellPathRequested -= this.GetGridCellPath;
         }
     }
-    private void GetGridCellPath(Vector3 fromGlobalPosition, Vector3 targetGlobalPosition, Callable mthd)
+    private void GetGridCellPath(Vector3 fromGlobalPosition, Vector3 toGlobalPosition, Callable mthd)
     {
-        mthd.Call(this.GridManager.GetGridCellPath(fromGlobalPosition, targetGlobalPosition));
+        mthd.Call(this.GridManager.GetGridCellPath(fromGlobalPosition, toGlobalPosition));
     }
 }
