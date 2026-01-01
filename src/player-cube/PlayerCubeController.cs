@@ -3,6 +3,16 @@ namespace CubeWorld;
 using Godot;
 using Godot.Collections;
 
+public enum CubeSideName
+{
+    X_l,
+    X_u,
+    Y_l,
+    Y_u,
+    Z_l,
+    Z_u
+}
+
 public partial class PlayerCubeController : Node3D
 {
     private bool IsMoving = false;
@@ -13,6 +23,9 @@ public partial class PlayerCubeController : Node3D
 
     private uint LAYER2_CUBE = 1 << 1;
     private uint LAYER13_TILE = 1 << 12;
+
+    [Export]
+    private Dictionary<CubeSideName, CubeSideResource> CubeSlots = [];
 
     private Vector3 PendingRotationDirection = Vector3.Zero;
     /// <summary>

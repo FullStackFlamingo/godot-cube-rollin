@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="CubeSideResource" load_steps=2 format=3 uid="uid://s6uurgrjthwa"]
+
+[ext_resource type="Script" uid="uid://d14jks11wcp1x" path="res://src/player-cube/CubeSideResource.cs" id="1_a8whg"]
+
+[resource]
+script = ExtResource("1_a8whg")
+Name = "Blue"
+Color = Color(0.22367713, 0.32850167, 0.7342619, 1)
+metadata/_custom_type_script = "uid://d14jks11wcp1x"
