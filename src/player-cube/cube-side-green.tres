@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_ns65c")
-Name = "Green"
+State = 2
 Color = Color(0.18479998, 0.56, 0.1910533, 1)
 metadata/_custom_type_script = "uid://d14jks11wcp1x"

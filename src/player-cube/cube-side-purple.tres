@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_d1aun")
-Name = "Purple"
+State = 5
 Color = Color(0.45882353, 0, 1, 1)
 metadata/_custom_type_script = "uid://d14jks11wcp1x"

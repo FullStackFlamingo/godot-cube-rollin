@@ -5,7 +5,7 @@ namespace CubeWorld;
 partial class CubeSideResource : Resource
 {
     [Export]
-    private string Name;
+    private GridCellState State;
     [Export]
     private Color Color;
 
@@ -14,14 +14,14 @@ partial class CubeSideResource : Resource
     // constructor with all default values.
     // Without a parameterless constructor, Godot will have problems
     // creating and editing your resource via the inspector.
-    public CubeSideResource() : this("Default Name", Color.FromHtml("#ff0000"))
+    public CubeSideResource() : this(GridCellState.RED, Color.FromHtml("#ff0000"))
     {
 
     }
 
-    public CubeSideResource(string name, Color color)
+    public CubeSideResource(GridCellState state, Color color)
     {
-        this.Name = name;
+        this.State = state;
         this.Color = color;
     }
 }

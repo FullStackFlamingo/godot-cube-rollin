@@ -56,6 +56,9 @@ spring_length = 8.0
 
 [node name="GameCamera" parent="." instance=ExtResource("3_o2e6r")]
 transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 5.257636, 5.8700747, 11.723755)
+projection = 1
+size = 13.733
+far = 320.63
 
 [node name="Grid" type="Node3D" parent="."]
 script = ExtResource("1_r6pnp")
