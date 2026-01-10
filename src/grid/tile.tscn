@@ -1,7 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cppa217x7ogvj"]
+[gd_scene load_steps=9 format=3 uid="uid://cppa217x7ogvj"]
 
 [ext_resource type="PackedScene" uid="uid://duuuga43rwiy7" path="res://src/grid/tile.blend" id="1_pdv48"]
 [ext_resource type="Script" uid="uid://b4hror200w8" path="res://src/grid/GridCell.cs" id="2_p6wfm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p6wfm"]
+resource_local_to_scene = true
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pdv48"]
 radius = 0.25
@@ -24,6 +27,9 @@ metadata/EDGE_LEFT = 0.0
 metadata/EDGE_RIGHT = 0.0
 metadata/EDGE_FORWARD = 0.0
 metadata/EDGE_BACK = 0.0
+
+[node name="Plane" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_p6wfm")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="1" groups=["grid-cell__exit"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)

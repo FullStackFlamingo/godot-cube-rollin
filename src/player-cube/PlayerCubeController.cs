@@ -140,14 +140,14 @@ public partial class PlayerCubeController : Node3D
                 Vector3 rotationAxis = normalCurrentTile.Cross(this.PendingRotationDirection).Normalized();
                 // endPosition 100% calculated by target Tile data (not cube Node3D values) - clean up floating point issue from MathR.RotateAround
                 Vector3 endPosition = resultTargetTile["position"].As<Vector3>() + (Vector3.One * normalTargetTile);
-                this.RotateCube(endPosition, pivot, rotationAxis, angle);
+                this.RotateCube(endPosition, pivot, rotationAxis, angle, targetGridCell);
             }
             this.PendingRotationGridCellPoints = null;
             this.PendingRotationDirection = Vector3.Zero;
 
         }
     }
-    public void RotateCube(Vector3 endPosition, Vector3 pivot, Vector3 rotationAxis, float targetAngle = 90)
+    public void RotateCube(Vector3 endPosition, Vector3 pivot, Vector3 rotationAxis, float targetAngle, GridCell targetGridCell)
     {
         if (IsMoving) return;
         IsMoving = true;
@@ -157,18 +157,20 @@ public partial class PlayerCubeController : Node3D
         tween.TweenMethod(Callable.From((float progress) =>
         {
             // MathR.RotateAround looks great animated, but has floating point issues due to its output being the input. see TweenCallback for floating point fixes
-            this.GlobalTransform = MathR.RotateAround(startTransform, pivot, rotationAxis, Mathf.DegToRad(targetAngle * progress));
+            this.GlobalTransform = MathR.RotateAround(startTransform, pivot, rotationAxis, Mathf.DegToRad((targetAngle) * progress));
         }), 0.0, 1.0, Speed);
         tween.TweenCallback(Callable.From(() =>
         {
             IsMoving = false;
             // set correct endPosition 100% calculated by target Tile data (not cube Node3D values), clean up floating point issue from MathR.RotateAround
             this.GlobalPosition = endPosition;
-            // TODO: set correct rotation, this is difficult and requires tracking rotation in code (tracked via direction movement) rather than relying on Node3D values
+            // TODO: set correct rotation, this is difficult and requires tracking rotation in code (local Vector3 updated on direction movement) rather than relying on Node3D values
             // this.GlobalBasis = new Basis(Vector3.Right.Cross(normalTargetTile), normalTargetTile, Vector3.Back.Cross(normalTargetTile)).Orthonormalized();
             // .RotatedLocal(Vector3.Up, Mathf.DegToRad(this.RotateOffsetY + 90))
             // .RotatedLocal(Vector3.Right, Mathf.DegToRad(this.RotateOffsetZ))
             // RotatedLocal(Vector3.Forward, Mathf.DegToRad(this.RotateOffsetX));
+            targetGridCell.State = (GridCellState)GD.RandRange(1, 2);
+            targetGridCell.UpdateMaterialState();
         }));
         IsMoving = true;
 
