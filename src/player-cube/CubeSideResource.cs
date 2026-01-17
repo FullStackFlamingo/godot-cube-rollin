@@ -5,9 +5,9 @@ namespace CubeWorld;
 partial class CubeSideResource : Resource
 {
     [Export]
-    private GridCellState State;
+    public GridCellState State;
     [Export]
-    private Color Color;
+    public Color Color;
 
     // Make sure you provide a parameterless constructor.
     // In C#, a parameterless constructor is different from a
