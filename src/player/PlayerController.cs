@@ -6,10 +6,6 @@ using PhantomCamera;
 
 public partial class PlayerController : MeshInstance3D
 {
-    [Export]
-    public GridManager GridManager;
-
-
     private PhysicsRayQueryParameters3D PendingScreenClickQuery;
     private Camera3D currentCam;
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://ci2mgvl56qk40"]
+[gd_scene load_steps=18 format=3 uid="uid://ci2mgvl56qk40"]
 
 [ext_resource type="Script" uid="uid://d31akw1yrrirc" path="res://src/game/LevelController.cs" id="1_7jnsn"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="1_g0od8"]
@@ -12,10 +12,7 @@
 [ext_resource type="Script" uid="uid://d14jks11wcp1x" path="res://src/player-cube/CubeSideResource.cs" id="10_kh5wj"]
 [ext_resource type="Resource" uid="uid://djpr0thuro7nx" path="res://src/player-cube/cube-side-red.tres" id="11_ui6eu"]
 [ext_resource type="Resource" uid="uid://s6uurgrjthwa" path="res://src/player-cube/cube-side-blue.tres" id="12_uqfir"]
-[ext_resource type="Resource" uid="uid://cd4736jl152g4" path="res://src/player-cube/cube-side-green.tres" id="13_4e3ml"]
-[ext_resource type="Resource" uid="uid://dpfy2s5fry8q1" path="res://src/player-cube/cube-side-white.tres" id="14_5duve"]
-[ext_resource type="Resource" uid="uid://bi4bdaontc7kd" path="res://src/player-cube/cube-side-purple.tres" id="15_jxw25"]
-[ext_resource type="Resource" uid="uid://bjbopk6rksfw2" path="res://src/player-cube/cube-side-yellow.tres" id="16_honro"]
+[ext_resource type="PackedScene" uid="uid://bpwl27sakcwrp" path="res://src/actors/enemy_patroller.tscn" id="17_ui6eu"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_htjjf"]
 
@@ -25,8 +22,10 @@ sky_material = SubResource("ProceduralSkyMaterial_htjjf")
 [sub_resource type="Environment" id="Environment_p7jmo"]
 background_mode = 2
 sky = SubResource("Sky_7jnsn")
+ssr_enabled = true
 ssao_enabled = true
 sdfgi_enabled = true
+volumetric_fog_density = 0.1096
 
 [sub_resource type="Resource" id="Resource_o2e6r"]
 script = ExtResource("2_o2e6r")
@@ -48,7 +47,7 @@ transform = Transform3D(0.50216585, -0.8127754, -0.2953397, 0.123944975, -0.2703
 shadow_enabled = true
 
 [node name="PhantomCamera3D" type="Node3D" parent="." node_paths=PackedStringArray("follow_target")]
-transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 5.257636, 5.8700747, 11.723755)
+transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 1.1440907, 13.175187, 20.309387)
 top_level = true
 script = ExtResource("1_g0od8")
 follow_mode = 5
@@ -56,16 +55,16 @@ follow_target = NodePath("../PlayerCube")
 tween_resource = SubResource("Resource_o2e6r")
 follow_damping = true
 follow_axis_lock = 2
-follow_distance = 8.0
+follow_distance = 20.0
 dead_zone_width = 0.069
 dead_zone_height = 0.08
-spring_length = 8.0
+spring_length = 20.0
 
 [node name="GameCamera" parent="." instance=ExtResource("3_o2e6r")]
-transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 5.257636, 5.8700747, 11.723755)
+transform = Transform3D(0.9018313, 0.26303634, -0.34279546, 0, 0.79335093, 0.60875934, 0.4320852, -0.5489992, 0.71546936, 1.1440907, 13.175187, 20.309387)
 projection = 1
-size = 13.733
-far = 320.63
+size = 16.0
+far = 400.0
 
 [node name="Grid" type="Node3D" parent="."]
 script = ExtResource("1_r6pnp")
@@ -74,12 +73,15 @@ script = ExtResource("1_r6pnp")
 
 [node name="tile" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+State = 1
 
 [node name="tile2" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.5, 0)
+State = 1
 
 [node name="tile3" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.5, 0)
+State = 1
 
 [node name="tile4" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 2)
@@ -92,12 +94,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 2)
 
 [node name="tile7" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.5, 0)
+State = 1
 
 [node name="tile8" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0.5, 0)
+State = 1
 
 [node name="tile9" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.5, 0)
+State = 1
 
 [node name="tile13" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 4)
@@ -119,6 +124,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 4)
 
 [node name="tile21" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 4)
+State = 1
 
 [node name="tile22" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 6)
@@ -131,6 +137,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, 6)
 
 [node name="tile25" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0.5, 0)
+State = 1
 
 [node name="tile26" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0.5, 0)
@@ -164,6 +171,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.5, 2)
 
 [node name="tile37" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 4)
+State = 1
 
 [node name="tile40" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 6)
@@ -254,15 +262,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0.5, 6)
 
 [node name="tile97" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0.5, 8)
+State = 1
 
 [node name="tile79" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0.5, 8)
+State = 1
 
 [node name="tile80" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 0.5, 8)
+State = 1
 
 [node name="tile81" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.5, 8)
+State = 1
 
 [node name="tile82" parent="Grid/GridCells" instance=ExtResource("2_f6t2u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 10)
@@ -320,12 +332,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.5, 14)
 
 [node name="ramp4" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 0, 8)
+State = 1
 
 [node name="ramp5" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 0, 4)
+State = 1
 
 [node name="ramp6" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 14, 0, 6)
+State = 1
 
 [node name="ramp" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 4)
@@ -350,28 +365,34 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 6, 0, 10)
 
 [node name="ramp11" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10, 0, 2)
+State = 1
 
 [node name="ramp13" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8, 0, 2)
+State = 1
 
 [node name="ramp14" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12, 0, 2)
+State = 1
 
 [node name="ramp15" parent="Grid/GridCells" instance=ExtResource("3_g0od8")]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 6, 0, 2)
+State = 1
 
-[node name="Player" parent="." node_paths=PackedStringArray("GridManager") instance=ExtResource("4_o2e6r")]
+[node name="Player" parent="." instance=ExtResource("4_o2e6r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1, 6)
 skeleton = NodePath("../Grid")
-GridManager = NodePath("../Grid")
 
 [node name="PlayerCube" parent="." instance=ExtResource("5_htjjf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1, 6)
 CubeSlots = Dictionary[int, ExtResource("10_kh5wj")]({
 0: ExtResource("11_ui6eu"),
-1: ExtResource("12_uqfir"),
-2: ExtResource("13_4e3ml"),
-3: ExtResource("14_5duve"),
-4: ExtResource("15_jxw25"),
-5: ExtResource("16_honro")
+1: ExtResource("11_ui6eu"),
+2: ExtResource("11_ui6eu"),
+3: ExtResource("12_uqfir"),
+4: ExtResource("12_uqfir"),
+5: ExtResource("12_uqfir")
 })
+
+[node name="EnemyPatroller" parent="." instance=ExtResource("17_ui6eu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)

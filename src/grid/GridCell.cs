@@ -24,7 +24,7 @@ public partial class GridCell : Node3D
     private MeshInstance3D MeshInstance3D;
     private Material Material;
     public static Dictionary<GridCellState, Color> GridCellCubeSideMap = new Dictionary<GridCellState, Color>{
-        { GridCellState.NONE, Color.FromHtml("#94948e")},
+        { GridCellState.NONE, Color.FromHtml("#c9c9be")},
         { GridCellState.RED, Color.FromHtml("#bb351f")},
         { GridCellState.GREEN, Color.FromHtml("#2f8f31")},
         { GridCellState.BLUE, Color.FromHtml("#3954bb")},

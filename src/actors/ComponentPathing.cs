@@ -7,6 +7,8 @@ public partial class ComponentPathing : Node
 {
     [Signal]
     public delegate void GridCellPathRequestedEventHandler(Vector3 from, Vector3 target, Callable mthd);
+    [Signal]
+    public delegate void GridCellPathMovementFinishedEventHandler();
 
     private Node3D Parent;
     [Export]
@@ -87,6 +89,10 @@ public partial class ComponentPathing : Node
 
             // tween.TweenProperty(this.Parent, "position", point + Vector3.Up, 1f);
         }
-        tween.Finished += () => this.busy = false;
+        tween.Finished += () =>
+        {
+            this.busy = false;
+            this.EmitSignal("GridCellPathMovementFinished");
+        };
     }
 }
