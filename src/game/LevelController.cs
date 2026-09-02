@@ -18,7 +18,7 @@ public partial class LevelController : Node
         Array<ComponentPathing> componentPathings = GDExtra.GetChildrenOfType<ComponentPathing>(this, true);
         foreach (var item in componentPathings)
         {
-            item.GridCellPathRequested += this.GetGridCellPath;
+               item.GridCellPathRequested += this.GetGridCellPath;
         }
     }
     public override void _ExitTree()

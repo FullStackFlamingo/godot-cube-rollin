@@ -110,7 +110,7 @@ public partial class GridManager : Node3D
     // }
 
     /// <summary>
-    /// In each direction, check if the neighbors of the cellPos are "connected". 
+    /// In each direction, check if the neighbors of the cellPos are "connected".
     /// Return "connected" cells as List.
     /// </summary>
     /// <param name="cellPos">position of "current" cell</param>
